@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cozy Hub • VIP Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;font-family:Poppins,sans-serif;
+  background:#050811;color:#fff;
+  min-height:100vh;display:flex;
+  align-items:center;justify-content:center;
+}
+.card{
+  width:440px;max-width:92vw;
+  background:rgba(7,11,20,.92);
+  border-radius:26px;padding:34px 30px;
+  text-align:center;
+  border:1px solid rgba(0,255,255,.25);
+  box-shadow:0 0 45px rgba(0,255,255,.25);
+}
+h1{color:#00eaff;margin-bottom:10px}
+input,select{
+  width:100%;padding:12px;margin-top:10px;
+  border-radius:10px;border:1px solid rgba(0,255,255,.25);
+  background:rgba(0,0,0,.6);color:#fff;
+}
+button{
+  margin-top:14px;width:100%;
+  padding:12px;border:none;border-radius:10px;
+  background:#00eaff;color:#001015;
+  font-weight:700;font-size:16px;
+  cursor:pointer;
+}
+.msg{margin-top:10px;font-size:13px}
+.box{
+  margin-top:12px;padding:12px;
+  border-radius:10px;
+  background:rgba(0,0,0,.6);
+  display:none;text-align:left;
+  font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Cozy Hub VIP Admin</h1>
+
+  <input id="adminKey" type="password" placeholder="Admin Key">
+  <input id="ip" placeholder="User IP (ex: 1.2.3.4)">
+  <select id="days">
+    <option value="7">VIP 7 days</option>
+    <option value="30">VIP 30 days</option>
+    <option value="60">VIP 60 days</option>
+  </select>
+
+  <button onclick="approve()">Approve VIP</button>
+  <button onclick="check()">Check VIP</button>
+
+  <div class="msg" id="msg"></div>
+  <div class="box" id="box"></div>
+</div>
+
+<script>
+const API = "https://cozyhub-vip-admin.aovo4504.workers.dev";
+
+function setMsg(t){document.getElementById("msg").textContent=t;}
+function showBox(t){
+  const b=document.getElementById("box");
+  b.style.display="block";b.textContent=t;
+}
+
+async function approve(){
+  const adminKey = adminKeyEl().value;
+  const ip = ipEl().value;
+  const days = daysEl().value;
+
+  setMsg("Approving...");
+  const r = await fetch(API + "/approve",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ adminKey, ip, days })
+  });
+  const d = await r.json();
+  if(!d.ok) return setMsg("Error: " + d.error);
+
+  setMsg("Approved ✓");
+  showBox(`IP: ${d.ip}\nDays: ${d.days}\nExpire: ${new Date(d.expireAt).toUTCString()}`);
+}
+
+async function check(){
+  const adminKey = adminKeyEl().value;
+  const ip = ipEl().value;
+
+  setMsg("Checking...");
+  const r = await fetch(API + "/status",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ adminKey, ip })
+  });
+  const d = await r.json();
+
+  if(!d.vip){
+    setMsg("Not VIP");
+    showBox("No VIP record.");
+    return;
+  }
+  setMsg("VIP ACTIVE ✓");
+  const x=d.data;
+  showBox(`IP: ${x.ip}\nDays: ${x.days}\nExpire: ${new Date(x.expireAt).toUTCString()}`);
+}
+
+function adminKeyEl(){return document.getElementById("adminKey");}
+function ipEl(){return document.getElementById("ip");}
+function daysEl(){return document.getElementById("days");}
+</script>
+
+</body>
+</html>
