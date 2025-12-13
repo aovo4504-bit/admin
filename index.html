@@ -1,121 +1,297 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Cozy Hub • VIP Admin</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-body{
-  margin:0;font-family:Poppins,sans-serif;
-  background:#050811;color:#fff;
-  min-height:100vh;display:flex;
-  align-items:center;justify-content:center;
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CozyHub Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  
+:root{
+  --bg:#050811;
+  --card:#071326cc;
+  --cyan:#00f0ff;
+  --cyan2:#00c6ff;
+  --text:#eaf9ff;
+  --muted:#a8c7d3;
+  --danger:#ff4d6d;
+  --ok:#2bff88;
 }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{position:relative;height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+.bg-canvas{position:absolute;inset:0;z-index:0}
 .card{
-  width:440px;max-width:92vw;
-  background:rgba(7,11,20,.92);
-  border-radius:26px;padding:34px 30px;
+  position:relative;z-index:2;
+  width:min(420px,92vw);
+  background:linear-gradient(180deg,#061426ee,#060a14dd);
+  border:1px solid rgba(0,240,255,.25);
+  border-radius:22px;
+  padding:26px 24px 20px;
+  box-shadow: 0 0 22px rgba(0,240,255,.16), 0 0 64px rgba(0,240,255,.08);
+  backdrop-filter: blur(10px);
+}
+.logo{
+  width:92px;height:92px;border-radius:50%;
+  margin:0 auto 10px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%),
+              url('https://i.imgur.com/QmY1w3N.png');
+  background-size:cover;
+  border:1px solid rgba(0,240,255,.32);
+  box-shadow:0 0 0 10px rgba(0,240,255,.04), 0 0 28px rgba(0,240,255,.28);
+}
+.title{
+  font-size:34px; font-weight:800; text-align:center; letter-spacing:.3px;
+  color:var(--cyan);
+  text-shadow:0 0 18px rgba(0,240,255,.35);
+}
+.sub{
+  text-align:center; color:var(--muted);
+  margin:10px 6px 18px;
+  line-height:1.35;
+}
+.btn{
+  width:100%;
+  border:none; cursor:pointer;
+  padding:13px 16px;
+  border-radius:14px;
+  background:linear-gradient(90deg,var(--cyan),var(--cyan2));
+  color:#001018;
+  font-weight:800;
+  letter-spacing:.2px;
+  box-shadow:0 0 18px rgba(0,240,255,.22);
+  position:relative;
+  overflow:hidden;
+}
+.btn:disabled{opacity:.6; cursor:not-allowed}
+.btn::after{
+  content:"";
+  position:absolute; inset:-60% -40%;
+  background:linear-gradient(120deg,rgba(255,255,255,.0),rgba(255,255,255,.35),rgba(255,255,255,0));
+  transform:translateX(-60%) rotate(12deg);
+  transition:transform .7s ease;
+}
+.btn:hover::after{transform:translateX(60%) rotate(12deg)}
+.row{
+  display:flex; gap:10px; margin-top:10px;
+}
+.pill{
+  flex:1;
+  border:1px solid rgba(0,240,255,.18);
+  background:rgba(0,240,255,.06);
+  color:var(--muted);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:12px;
   text-align:center;
-  border:1px solid rgba(0,255,255,.25);
-  box-shadow:0 0 45px rgba(0,255,255,.25);
 }
-h1{color:#00eaff;margin-bottom:10px}
-input,select{
-  width:100%;padding:12px;margin-top:10px;
-  border-radius:10px;border:1px solid rgba(0,255,255,.25);
-  background:rgba(0,0,0,.6);color:#fff;
-}
-button{
-  margin-top:14px;width:100%;
-  padding:12px;border:none;border-radius:10px;
-  background:#00eaff;color:#001015;
-  font-weight:700;font-size:16px;
-  cursor:pointer;
-}
-.msg{margin-top:10px;font-size:13px}
-.box{
-  margin-top:12px;padding:12px;
-  border-radius:10px;
-  background:rgba(0,0,0,.6);
-  display:none;text-align:left;
+.msg{
+  margin-top:12px;
+  border-radius:14px;
+  padding:10px 12px;
   font-size:13px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.06);
+  display:none;
 }
-</style>
+.msg.show{display:block}
+.msg.ok{border-color:rgba(43,255,136,.35); background:rgba(43,255,136,.08)}
+.msg.error{border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.08)}
+.icons{
+  display:flex; gap:14px; justify-content:center;
+  margin-top:16px;
+}
+.iconbtn{
+  width:46px;height:46px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,240,255,.07);
+  border:1px solid rgba(0,240,255,.20);
+  box-shadow:0 0 16px rgba(0,240,255,.10);
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.iconbtn:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:0 0 24px rgba(0,240,255,.18);
+  background:rgba(0,240,255,.10);
+}
+.iconbtn img{width:26px;height:26px; filter: drop-shadow(0 0 10px rgba(0,240,255,.25));}
+.small{
+  text-align:center; font-size:11px; color:rgba(168,199,211,.75);
+  margin-top:10px;
+}
+.kbox{
+  margin-top:14px;
+  padding:12px 12px;
+  border-radius:14px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(0,240,255,.18);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  text-align:center;
+  user-select:text;
+}
+.krow{display:flex;gap:10px;margin-top:10px}
+.krow .btn{flex:1}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin-bottom:8px
+}
+.langsel{
+  background:rgba(0,240,255,.08);
+  border:1px solid rgba(0,240,255,.18);
+  color:var(--text);
+  border-radius:12px;
+  padding:8px 10px;
+  font-size:12px;
+}
+
+  body{overflow:auto}
+  .wrap{align-items:flex-start; padding-top:28px; overflow:auto}
+  table{width:100%; border-collapse:collapse; margin-top:12px; font-size:12px}
+  th,td{padding:8px 8px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top}
+  th{color:var(--muted); font-weight:700}
+  input{width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,240,255,.18); background:rgba(0,0,0,.25); color:var(--text)}
+  .btn2{padding:10px 12px; border-radius:12px; border:1px solid rgba(0,240,255,.18); background:rgba(0,240,255,.08); color:var(--text); cursor:pointer; font-weight:700}
+  </style>
 </head>
 <body>
+  <canvas id="bg" class="bg-canvas"></canvas>
+  <div class="wrap">
+    <div class="card" style="width:min(920px,96vw);">
+      <div class="title" style="font-size:26px">CozyHub Admin</div>
+      <div class="sub">Ban / Reset / List keys (KV). Keep ADMIN_SECRET private.</div>
 
-<div class="card">
-  <h1>Cozy Hub VIP Admin</h1>
+      <div class="row">
+        <input id="secret" placeholder="ADMIN_SECRET (required)" />
+        <button class="btn2" id="load">Load Keys</button>
+      </div>
 
-  <input id="adminKey" type="password" placeholder="Admin Key">
-  <input id="ip" placeholder="User IP (ex: 1.2.3.4)">
-  <select id="days">
-    <option value="7">VIP 7 days</option>
-    <option value="30">VIP 30 days</option>
-    <option value="60">VIP 60 days</option>
-  </select>
+      <div class="row">
+        <input id="banKey" placeholder="Key to ban" />
+        <button class="btn2" id="banBtn">Ban</button>
+        <button class="btn2" id="unbanBtn">Unban</button>
+        <button class="btn2" id="resetBtn">Reset Key</button>
+      </div>
 
-  <button onclick="approve()">Approve VIP</button>
-  <button onclick="check()">Check VIP</button>
+      <div class="msg" id="msg"></div>
 
-  <div class="msg" id="msg"></div>
-  <div class="box" id="box"></div>
-</div>
+      <table>
+        <thead><tr>
+          <th>Key</th><th>Fingerprint</th><th>Expire</th><th>Created</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
 
+      <div class="small">Tip: If worker error 1101 → missing KV binding or SECRET_KEY/ADMIN_SECRET not set.</div>
+    </div>
+  </div>
 <script>
-const API = "https://cozyhub-vip-admin.aovo4504.workers.dev";
-
-function setMsg(t){document.getElementById("msg").textContent=t;}
-function showBox(t){
-  const b=document.getElementById("box");
-  b.style.display="block";b.textContent=t;
-}
-
-async function approve(){
-  const adminKey = adminKeyEl().value;
-  const ip = ipEl().value;
-  const days = daysEl().value;
-
-  setMsg("Approving...");
-  const r = await fetch(API + "/approve",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ adminKey, ip, days })
-  });
-  const d = await r.json();
-  if(!d.ok) return setMsg("Error: " + d.error);
-
-  setMsg("Approved ✓");
-  showBox(`IP: ${d.ip}\nDays: ${d.days}\nExpire: ${new Date(d.expireAt).toUTCString()}`);
-}
-
-async function check(){
-  const adminKey = adminKeyEl().value;
-  const ip = ipEl().value;
-
-  setMsg("Checking...");
-  const r = await fetch(API + "/status",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ adminKey, ip })
-  });
-  const d = await r.json();
-
-  if(!d.vip){
-    setMsg("Not VIP");
-    showBox("No VIP record.");
-    return;
+(function(){
+  const c=document.getElementById('bg');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  let w,h,parts=[];
+  function resize(){
+    w=c.width=window.innerWidth; h=c.height=window.innerHeight;
+    parts=Array.from({length:Math.min(140, Math.floor((w*h)/14000))}, ()=>({
+      x:Math.random()*w, y:Math.random()*h,
+      r:1+Math.random()*2.6,
+      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
+      a:.15+Math.random()*.35
+    }));
   }
-  setMsg("VIP ACTIVE ✓");
-  const x=d.data;
-  showBox(`IP: ${x.ip}\nDays: ${x.days}\nExpire: ${new Date(x.expireAt).toUTCString()}`);
-}
-
-function adminKeyEl(){return document.getElementById("adminKey");}
-function ipEl(){return document.getElementById("ip");}
-function daysEl(){return document.getElementById("days");}
+  window.addEventListener('resize',resize,{passive:true});
+  resize();
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    // glow dots
+    for(const p of parts){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x< -20) p.x=w+20;
+      if(p.x>w+20) p.x=-20;
+      if(p.y< -20) p.y=h+20;
+      if(p.y>h+20) p.y=-20;
+      ctx.beginPath();
+      ctx.fillStyle=`rgba(0,240,255,${p.a})`;
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    // subtle connections
+    for(let i=0;i<parts.length;i++){
+      for(let j=i+1;j<parts.length;j++){
+        const a=parts[i], b=parts[j];
+        const dx=a.x-b.x, dy=a.y-b.y;
+        const d=dx*dx+dy*dy;
+        if(d<150*150){
+          const alpha = 0.06*(1-d/(150*150));
+          ctx.strokeStyle=`rgba(0,240,255,${alpha})`;
+          ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
 </script>
-
+<script type="module">
+const API="https://cozyhub-admin-api.aovo4504.workers.dev/";
+function show(type, text){
+  const m=document.getElementById('msg');
+  m.className="msg show " + (type==="error"?"error":"ok");
+  m.textContent=text;
+}
+async function call(path, body){
+  const secret=document.getElementById('secret').value.trim();
+  if(!secret) throw new Error("missing secret");
+  const res=await fetch(API+path,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","X-Admin-Secret":secret},
+    body:JSON.stringify(body||{})
+  });
+  return res.json();
+}
+document.getElementById("load").addEventListener("click", async()=>{
+  try{
+    const data=await call("list",{});
+    if(!data.ok) throw new Error("bad");
+    const tb=document.getElementById("tbody");
+    tb.innerHTML="";
+    for(const row of data.items){
+      const tr=document.createElement("tr");
+      tr.innerHTML = `<td>${row.key}</td><td>${row.fp}</td><td>${new Date(row.expire).toLocaleString()}</td><td>${new Date(row.created).toLocaleString()}</td><td>${row.banned?"BANNED":"OK"}</td>`;
+      tb.appendChild(tr);
+    }
+    show("ok","Loaded: "+data.items.length);
+  }catch(e){console.error(e); show("error","Error");}
+});
+document.getElementById("banBtn").addEventListener("click", async()=>{
+  try{
+    const k=document.getElementById("banKey").value.trim();
+    const data=await call("ban",{key:k});
+    if(!data.ok) throw new Error("bad");
+    show("ok","Banned");
+  }catch(e){console.error(e); show("error","Error");}
+});
+document.getElementById("unbanBtn").addEventListener("click", async()=>{
+  try{
+    const k=document.getElementById("banKey").value.trim();
+    const data=await call("unban",{key:k});
+    if(!data.ok) throw new Error("bad");
+    show("ok","Unbanned");
+  }catch(e){console.error(e); show("error","Error");}
+});
+document.getElementById("resetBtn").addEventListener("click", async()=>{
+  try{
+    const k=document.getElementById("banKey").value.trim();
+    const data=await call("reset",{key:k});
+    if(!data.ok) throw new Error("bad");
+    show("ok","Reset done");
+  }catch(e){console.error(e); show("error","Error");}
+});
+</script>
 </body>
 </html>
