@@ -1,297 +1,148 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>CozyHub Admin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-  
-:root{
-  --bg:#050811;
-  --card:#071326cc;
-  --cyan:#00f0ff;
-  --cyan2:#00c6ff;
-  --text:#eaf9ff;
-  --muted:#a8c7d3;
-  --danger:#ff4d6d;
-  --ok:#2bff88;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
-a{color:inherit;text-decoration:none}
-.wrap{position:relative;height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
-.bg-canvas{position:absolute;inset:0;z-index:0}
-.card{
-  position:relative;z-index:2;
-  width:min(420px,92vw);
-  background:linear-gradient(180deg,#061426ee,#060a14dd);
-  border:1px solid rgba(0,240,255,.25);
-  border-radius:22px;
-  padding:26px 24px 20px;
-  box-shadow: 0 0 22px rgba(0,240,255,.16), 0 0 64px rgba(0,240,255,.08);
-  backdrop-filter: blur(10px);
-}
-.logo{
-  width:92px;height:92px;border-radius:50%;
-  margin:0 auto 10px;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%),
-              url('https://i.imgur.com/QmY1w3N.png');
-  background-size:cover;
-  border:1px solid rgba(0,240,255,.32);
-  box-shadow:0 0 0 10px rgba(0,240,255,.04), 0 0 28px rgba(0,240,255,.28);
-}
-.title{
-  font-size:34px; font-weight:800; text-align:center; letter-spacing:.3px;
-  color:var(--cyan);
-  text-shadow:0 0 18px rgba(0,240,255,.35);
-}
-.sub{
-  text-align:center; color:var(--muted);
-  margin:10px 6px 18px;
-  line-height:1.35;
-}
-.btn{
-  width:100%;
-  border:none; cursor:pointer;
-  padding:13px 16px;
-  border-radius:14px;
-  background:linear-gradient(90deg,var(--cyan),var(--cyan2));
-  color:#001018;
-  font-weight:800;
-  letter-spacing:.2px;
-  box-shadow:0 0 18px rgba(0,240,255,.22);
-  position:relative;
-  overflow:hidden;
-}
-.btn:disabled{opacity:.6; cursor:not-allowed}
-.btn::after{
-  content:"";
-  position:absolute; inset:-60% -40%;
-  background:linear-gradient(120deg,rgba(255,255,255,.0),rgba(255,255,255,.35),rgba(255,255,255,0));
-  transform:translateX(-60%) rotate(12deg);
-  transition:transform .7s ease;
-}
-.btn:hover::after{transform:translateX(60%) rotate(12deg)}
-.row{
-  display:flex; gap:10px; margin-top:10px;
-}
-.pill{
-  flex:1;
-  border:1px solid rgba(0,240,255,.18);
-  background:rgba(0,240,255,.06);
-  color:var(--muted);
-  border-radius:14px;
-  padding:10px 12px;
-  font-size:12px;
-  text-align:center;
-}
-.msg{
-  margin-top:12px;
-  border-radius:14px;
-  padding:10px 12px;
-  font-size:13px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.06);
-  display:none;
-}
-.msg.show{display:block}
-.msg.ok{border-color:rgba(43,255,136,.35); background:rgba(43,255,136,.08)}
-.msg.error{border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.08)}
-.icons{
-  display:flex; gap:14px; justify-content:center;
-  margin-top:16px;
-}
-.iconbtn{
-  width:46px;height:46px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,240,255,.07);
-  border:1px solid rgba(0,240,255,.20);
-  box-shadow:0 0 16px rgba(0,240,255,.10);
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-}
-.iconbtn:hover{
-  transform:translateY(-2px) scale(1.03);
-  box-shadow:0 0 24px rgba(0,240,255,.18);
-  background:rgba(0,240,255,.10);
-}
-.iconbtn img{width:26px;height:26px; filter: drop-shadow(0 0 10px rgba(0,240,255,.25));}
-.small{
-  text-align:center; font-size:11px; color:rgba(168,199,211,.75);
-  margin-top:10px;
-}
-.kbox{
-  margin-top:14px;
-  padding:12px 12px;
-  border-radius:14px;
-  background:rgba(0,0,0,.28);
-  border:1px solid rgba(0,240,255,.18);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  text-align:center;
-  user-select:text;
-}
-.krow{display:flex;gap:10px;margin-top:10px}
-.krow .btn{flex:1}
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;margin-bottom:8px
-}
-.langsel{
-  background:rgba(0,240,255,.08);
-  border:1px solid rgba(0,240,255,.18);
-  color:var(--text);
-  border-radius:12px;
-  padding:8px 10px;
-  font-size:12px;
-}
-
-  body{overflow:auto}
-  .wrap{align-items:flex-start; padding-top:28px; overflow:auto}
-  table{width:100%; border-collapse:collapse; margin-top:12px; font-size:12px}
-  th,td{padding:8px 8px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top}
-  th{color:var(--muted); font-weight:700}
-  input{width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,240,255,.18); background:rgba(0,0,0,.25); color:var(--text)}
-  .btn2{padding:10px 12px; border-radius:12px; border:1px solid rgba(0,240,255,.18); background:rgba(0,240,255,.08); color:var(--text); cursor:pointer; font-weight:700}
-  </style>
-</head>
-<body>
-  <canvas id="bg" class="bg-canvas"></canvas>
-  <div class="wrap">
-    <div class="card" style="width:min(920px,96vw);">
-      <div class="title" style="font-size:26px">CozyHub Admin</div>
-      <div class="sub">Ban / Reset / List keys (KV). Keep ADMIN_SECRET private.</div>
-
-      <div class="row">
-        <input id="secret" placeholder="ADMIN_SECRET (required)" />
-        <button class="btn2" id="load">Load Keys</button>
-      </div>
-
-      <div class="row">
-        <input id="banKey" placeholder="Key to ban" />
-        <button class="btn2" id="banBtn">Ban</button>
-        <button class="btn2" id="unbanBtn">Unban</button>
-        <button class="btn2" id="resetBtn">Reset Key</button>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <table>
-        <thead><tr>
-          <th>Key</th><th>Fingerprint</th><th>Expire</th><th>Created</th><th>Status</th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-
-      <div class="small">Tip: If worker error 1101 → missing KV binding or SECRET_KEY/ADMIN_SECRET not set.</div>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CozyHub Admin</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/lang.js"></script><script src="../assets/config.js"></script>
+<style>
+.admin{width:min(1100px,96vw);display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start}
+.side,.main{background:rgba(10,15,30,.92);border:1px solid rgba(0,255,255,.25);border-radius:22px;padding:18px;box-shadow:0 0 40px rgba(0,255,255,.18)}
+.tab{display:block;width:100%;padding:12px 12px;margin:8px 0;border-radius:12px;background:rgba(0,0,0,.55);border:1px solid rgba(0,255,255,.18);color:#fff;cursor:pointer;text-align:left}
+.tab.active{border-color:rgba(0,255,255,.55);box-shadow:0 0 18px rgba(0,255,255,.25)}
+.h{font-size:18px;color:var(--cyan);margin:0 0 10px}
+.pane{display:none}
+.pane.show{display:block}
+.input{width:100%;padding:12px 12px;border-radius:12px;background:#000;border:1px solid rgba(0,255,255,.25);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.badge{display:inline-block;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:700}
+.badge.ok{background:rgba(61,255,154,.12);color:var(--ok);border:1px solid rgba(61,255,154,.35)}
+.badge.warn{background:rgba(255,180,0,.12);color:var(--warn);border:1px solid rgba(255,180,0,.35)}
+.badge.bad{background:rgba(255,75,75,.12);color:var(--bad);border:1px solid rgba(255,75,75,.35)}
+pre{background:#000;padding:12px;border-radius:12px;border:1px solid rgba(0,255,255,.25);word-break:break-all}
+</style>
+</head><body>
+<div class="bg"></div><canvas id="stars"></canvas>
+<div class="admin">
+  <div class="side">
+    <div class="h">CozyHub Admin</div>
+    <div id="login">
+      <input id="pw" class="input" type="password" placeholder="Admin password">
+      <button class="btn" style="margin-top:10px" onclick="login()">Login</button>
+      <div id="loginMsg" class="msg"></div>
+    </div>
+    <div id="menu" style="display:none">
+      <button class="tab active" data-tab="dash">Dashboard</button>
+      <button class="tab" data-tab="keys">Keys</button>
+      <button class="tab" data-tab="web">Web Control</button>
+      <button class="tab" data-tab="rotation">Rotation</button>
+      <button class="btn" style="margin-top:10px;background:#ff4b4b;color:#fff" onclick="logout()">Logout</button>
     </div>
   </div>
+  <div class="main">
+    <div id="dash" class="pane show">
+      <div class="h">Dashboard</div>
+      <div class="row">
+        <div class="badge ok">Keys: <span id="k">-</span></div>
+        <div class="badge ok">Tasks: <span id="t">-</span></div>
+      </div>
+    </div>
+    <div id="keys" class="pane">
+      <div class="h">Keys</div>
+      <div class="row">
+        <input id="ip" class="input" placeholder="IP" style="flex:1">
+        <input id="hours" class="input" placeholder="Ban hours" style="width:140px" value="24">
+      </div>
+      <div class="row">
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="ban()">Ban</button>
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="unban()">Unban</button>
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="resetKey()">Reset Key</button>
+      </div>
+      <div id="keysMsg" class="msg"></div>
+    </div>
+    <div id="web" class="pane">
+      <div class="h">Web Control</div>
+      <div class="row">
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="maint(true)">ON</button>
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="maint(false)">OFF</button>
+        <span id="m" class="badge ok">-</span>
+      </div>
+    </div>
+    <div id="rotation" class="pane">
+      <div class="h">Rotation</div>
+      <div class="row">
+        <span id="rb" class="badge ok">Loading...</span>
+        <span id="rl" style="opacity:.7;font-size:12px"></span>
+      </div>
+      <button class="btn" style="width:auto;padding:10px 14px" onclick="rotDone()">Rotate Done</button>
+      <div style="margin-top:10px">
+        <button class="btn" style="width:auto;padding:10px 14px" onclick="gen()">Generate Secret</button>
+        <div id="wrap" style="display:none;margin-top:10px">
+          <pre id="box"></pre>
+          <div class="row">
+            <span id="str" class="badge ok">Strong</span>
+            <button class="btn" style="width:auto;padding:10px 14px" onclick="copy()">Copy</button>
+            <span id="timer" style="opacity:.65;font-size:12px"></span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <b>History</b>
+        <div id="hist" style="margin-top:8px;font-size:13px;opacity:.9"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../assets/stars.js"></script>
 <script>
-(function(){
-  const c=document.getElementById('bg');
-  if(!c) return;
-  const ctx=c.getContext('2d');
-  let w,h,parts=[];
-  function resize(){
-    w=c.width=window.innerWidth; h=c.height=window.innerHeight;
-    parts=Array.from({length:Math.min(140, Math.floor((w*h)/14000))}, ()=>({
-      x:Math.random()*w, y:Math.random()*h,
-      r:1+Math.random()*2.6,
-      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
-      a:.15+Math.random()*.35
-    }));
-  }
-  window.addEventListener('resize',resize,{passive:true});
-  resize();
-  function tick(){
-    ctx.clearRect(0,0,w,h);
-    // glow dots
-    for(const p of parts){
-      p.x+=p.vx; p.y+=p.vy;
-      if(p.x< -20) p.x=w+20;
-      if(p.x>w+20) p.x=-20;
-      if(p.y< -20) p.y=h+20;
-      if(p.y>h+20) p.y=-20;
-      ctx.beginPath();
-      ctx.fillStyle=`rgba(0,240,255,${p.a})`;
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fill();
-    }
-    // subtle connections
-    for(let i=0;i<parts.length;i++){
-      for(let j=i+1;j<parts.length;j++){
-        const a=parts[i], b=parts[j];
-        const dx=a.x-b.x, dy=a.y-b.y;
-        const d=dx*dx+dy*dy;
-        if(d<150*150){
-          const alpha = 0.06*(1-d/(150*150));
-          ctx.strokeStyle=`rgba(0,240,255,${alpha})`;
-          ctx.lineWidth=1;
-          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-  tick();
-})();
-</script>
-<script type="module">
-const API="https://cozyhub-admin-api.aovo4504.workers.dev/";
-function show(type, text){
-  const m=document.getElementById('msg');
-  m.className="msg show " + (type==="error"?"error":"ok");
-  m.textContent=text;
+applyLang("en");
+const API=COZY.api.admin;
+const tok=()=>localStorage.getItem("admTok")||"";
+const setAuthed=(v)=>{document.getElementById("login").style.display=v?"none":"block";document.getElementById("menu").style.display=v?"block":"none";};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+document.querySelectorAll(".pane").forEach(p=>p.classList.remove("show"));document.getElementById(b.dataset.tab).classList.add("show");});
+async function api(path,body){
+  const r=await fetch(API+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","x-admin-token":tok()},body:body?JSON.stringify(body):undefined});
+  return await r.json();
 }
-async function call(path, body){
-  const secret=document.getElementById('secret').value.trim();
-  if(!secret) throw new Error("missing secret");
-  const res=await fetch(API+path,{
-    method:"POST",
-    headers:{"Content-Type":"application/json","X-Admin-Secret":secret},
-    body:JSON.stringify(body||{})
-  });
-  return res.json();
+async function login(){
+  try{
+    const pw=document.getElementById("pw").value.trim();
+    const d=await api("/admin/login",{password:pw});
+    if(!d.ok) throw 0;
+    localStorage.setItem("admTok",d.token);
+    setAuthed(true); await refresh();
+  }catch{document.getElementById("loginMsg").className="msg show error";document.getElementById("loginMsg").textContent="Login failed";}
 }
-document.getElementById("load").addEventListener("click", async()=>{
-  try{
-    const data=await call("list",{});
-    if(!data.ok) throw new Error("bad");
-    const tb=document.getElementById("tbody");
-    tb.innerHTML="";
-    for(const row of data.items){
-      const tr=document.createElement("tr");
-      tr.innerHTML = `<td>${row.key}</td><td>${row.fp}</td><td>${new Date(row.expire).toLocaleString()}</td><td>${new Date(row.created).toLocaleString()}</td><td>${row.banned?"BANNED":"OK"}</td>`;
-      tb.appendChild(tr);
-    }
-    show("ok","Loaded: "+data.items.length);
-  }catch(e){console.error(e); show("error","Error");}
-});
-document.getElementById("banBtn").addEventListener("click", async()=>{
-  try{
-    const k=document.getElementById("banKey").value.trim();
-    const data=await call("ban",{key:k});
-    if(!data.ok) throw new Error("bad");
-    show("ok","Banned");
-  }catch(e){console.error(e); show("error","Error");}
-});
-document.getElementById("unbanBtn").addEventListener("click", async()=>{
-  try{
-    const k=document.getElementById("banKey").value.trim();
-    const data=await call("unban",{key:k});
-    if(!data.ok) throw new Error("bad");
-    show("ok","Unbanned");
-  }catch(e){console.error(e); show("error","Error");}
-});
-document.getElementById("resetBtn").addEventListener("click", async()=>{
-  try{
-    const k=document.getElementById("banKey").value.trim();
-    const data=await call("reset",{key:k});
-    if(!data.ok) throw new Error("bad");
-    show("ok","Reset done");
-  }catch(e){console.error(e); show("error","Error");}
-});
+async function logout(){localStorage.removeItem("admTok");setAuthed(false);try{await api("/admin/logout",{});}catch(e){}}
+async function refresh(){const d=await api("/admin/stats");document.getElementById("k").textContent=d.keys??"-";document.getElementById("t").textContent=d.tasks??"-";
+const m=await api("/admin/maint");document.getElementById("m").className="badge "+(m.on?"warn":"ok");document.getElementById("m").textContent=m.on?"ON":"OFF";
+await rotLoad();}
+async function ban(){const ip=document.getElementById("ip").value.trim();const hours=Number(document.getElementById("hours").value||24);
+const d=await api("/admin/ban",{ip,hours});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
+async function unban(){const ip=document.getElementById("ip").value.trim();const d=await api("/admin/unban",{ip});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
+async function resetKey(){const ip=document.getElementById("ip").value.trim();const d=await api("/admin/resetkey",{ip});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
+async function maint(on){await api("/admin/maint",{on});await refresh();}
+async function rotDone(){await api("/admin/rotation/mark",{type:"JWT+SYSTEM"});await rotLoad();}
+async function rotLoad(){
+  const d=await api("/admin/rotation/status");
+  const rb=document.getElementById("rb");
+  rb.className="badge "+(d.level==="danger"?"bad":(d.level==="warn"?"warn":"ok"));
+  rb.textContent=d.level==="ok"?("Next in "+d.leftDays+" days"):(d.level==="warn"?("Soon "+d.leftDays+" days"):"Overdue");
+  document.getElementById("rl").textContent=d.last?("Last: "+new Date(d.last).toLocaleString()):"Last: Never";
+  const h=await api("/admin/rotation/history");
+  document.getElementById("hist").innerHTML=(h.list||[]).slice(0,20).map(x=>`• ${new Date(x.time).toLocaleString()} — ${x.type} — ${x.ip||""}`).join("<br>")||"-";
+}
+let hideInt=null,left=30;
+function gen(){
+  const bytes=crypto.getRandomValues(new Uint8Array(48));
+  const s=Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
+  document.getElementById("wrap").style.display="block";
+  document.getElementById("box").textContent=s;
+  document.getElementById("str").className="badge ok";
+  clearInterval(hideInt); left=30;
+  document.getElementById("timer").textContent="Auto hide in 30s";
+  hideInt=setInterval(()=>{left--;document.getElementById("timer").textContent="Auto hide in "+left+"s";if(left<=0){clearInterval(hideInt);document.getElementById("wrap").style.display="none";}},1000);
+}
+function copy(){navigator.clipboard.writeText(document.getElementById("box").textContent.trim());}
+(function(){ if(tok()){ setAuthed(true); refresh().catch(()=>{});} })();
 </script>
-</body>
-</html>
+</body></html>
