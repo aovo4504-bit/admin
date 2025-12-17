@@ -1,148 +1,583 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <title>CozyHub Admin</title>
-<link rel="stylesheet" href="../assets/style.css">
-<script src="../assets/lang.js"></script><script src="../assets/config.js"></script>
 <style>
-.admin{width:min(1100px,96vw);display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start}
-.side,.main{background:rgba(10,15,30,.92);border:1px solid rgba(0,255,255,.25);border-radius:22px;padding:18px;box-shadow:0 0 40px rgba(0,255,255,.18)}
-.tab{display:block;width:100%;padding:12px 12px;margin:8px 0;border-radius:12px;background:rgba(0,0,0,.55);border:1px solid rgba(0,255,255,.18);color:#fff;cursor:pointer;text-align:left}
-.tab.active{border-color:rgba(0,255,255,.55);box-shadow:0 0 18px rgba(0,255,255,.25)}
-.h{font-size:18px;color:var(--cyan);margin:0 0 10px}
-.pane{display:none}
-.pane.show{display:block}
-.input{width:100%;padding:12px 12px;border-radius:12px;background:#000;border:1px solid rgba(0,255,255,.25);color:#fff}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.badge{display:inline-block;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:700}
-.badge.ok{background:rgba(61,255,154,.12);color:var(--ok);border:1px solid rgba(61,255,154,.35)}
-.badge.warn{background:rgba(255,180,0,.12);color:var(--warn);border:1px solid rgba(255,180,0,.35)}
-.badge.bad{background:rgba(255,75,75,.12);color:var(--bad);border:1px solid rgba(255,75,75,.35)}
-pre{background:#000;padding:12px;border-radius:12px;border:1px solid rgba(0,255,255,.25);word-break:break-all}
+:root{
+  --bg:#050811;
+  --card: rgba(7,11,20,.88);
+  --cyan:#00eaff;
+  --ok:#7dffb0;
+  --err:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color:#fff;
+  overflow:hidden;
+}
+#cozyStars{ position:fixed; inset:0; z-index:-2; }
+.bgGlow{
+  position:fixed; inset:0; z-index:-3;
+  background: radial-gradient(circle at top, #151b2b 0, #050811 55%, #02040a 100%);
+}
+.langBox{
+  position:fixed; top:14px; right:14px; z-index:20;
+  display:flex; gap:8px;
+}
+.langBox button{
+  padding:8px 10px; border-radius:10px;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.35);
+  color:#fff; cursor:pointer;
+}
+.langBox button.active{
+  border-color: rgba(0,234,255,.6);
+  box-shadow:0 0 18px rgba(0,234,255,.22);
+}
+.card{
+  width: 430px;
+  max-width: 92vw;
+  background: var(--card);
+  padding: 34px 30px 30px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 0 45px rgba(0, 255, 255, 0.22), 0 0 90px rgba(0, 255, 255, 0.10);
+  border: 1px solid rgba(0,255,255,0.20);
+  margin: 12vh auto 0;
+  position:relative;
+  z-index:5;
+}
+.logo{
+  width: 110px; height:110px; margin:0 auto 16px; border-radius:50%;
+  background: center/cover no-repeat;
+  box-shadow: 0 0 18px var(--cyan), 0 0 40px rgba(0,255,255,0.65);
+}
+h1{
+  font-size: 32px; margin: 6px 0 10px; color: var(--cyan);
+  letter-spacing: .5px;
+  text-shadow: 0 0 10px rgba(0,255,255,.55), 0 0 18px rgba(0,255,255,.30);
+}
+.sub{opacity:.82; font-size:14px; line-height:1.4}
+.btn{
+  margin-top: 18px;
+  padding: 12px 0;
+  width: 100%;
+  font-weight: 700;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg,#7df9ff,#7dffb0);
+  color: #001015;
+  font-size: 16px;
+  box-shadow: 0 0 24px rgba(0,255,255,0.32);
+  transition: transform .18s, box-shadow .18s;
+}
+.btn:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 0 34px rgba(0,255,255,0.45)}
+.btn:active{transform:scale(.98)}
+.status-success,.status-error{
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; margin:18px 0 6px;
+  font-size:18px; font-weight:700;
+  opacity:0; transform:translateY(6px);
+  animation:fadeInUp .35s ease forwards;
+}
+.status-success{color:var(--ok); text-shadow:0 0 12px rgba(125,255,176,.55)}
+.status-error{color:var(--err); text-shadow:0 0 12px rgba(255,107,107,.55)}
+.badge{
+  width:28px;height:28px;border-radius:50%;
+  display:grid; place-items:center;
+  font-weight:900;color:#fff;
+}
+.badge.ok{
+  background: radial-gradient(circle at 30% 30%, #7dffb0, #1fdc7c);
+  box-shadow:0 0 14px rgba(31,220,124,.8);
+  color:#0b3;
+}
+.badge.err{
+  background: radial-gradient(circle at 30% 30%, #ff9a9a, #ff3b3b);
+  box-shadow:0 0 14px rgba(255,59,59,.8);
+  color:#fff;
+}
+@keyframes fadeInUp{to{opacity:1; transform:translateY(0)}}
+.small{margin-top:10px; font-size:11px; opacity:.55}
+.keybox{
+  margin-top: 18px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.62);
+  font-size: 18px;
+  min-height: 26px;
+  letter-spacing: 1px;
+  text-align: center;
+  border: 1px solid rgba(0,255,255,0.32);
+  box-shadow: inset 0 0 22px rgba(0,255,255,0.25);
+  word-break: break-all;
+}
+.row{display:flex; gap:10px; margin-top:12px}
+.row .btn{margin-top:0}
+.iconRow{margin-top:18px; display:flex; justify-content:center; gap:16px}
+.iconRow a{
+  width:42px; height:42px; display:grid; place-items:center;
+  border-radius:14px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 0 18px rgba(0,234,255,0.10);
+  transition: transform .18s, box-shadow .18s, border-color .18s;
+}
+.iconRow a:hover{
+  transform:translateY(-2px) scale(1.06);
+  border-color: rgba(0,234,255,.45);
+  box-shadow:0 0 26px rgba(0,234,255,0.22);
+}
+.iconRow img{width:22px; height:22px; filter: drop-shadow(0 0 10px rgba(0,234,255,0.20));}
+
+.adminWrap{width:980px;max-width:94vw;margin:8vh auto 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.tabBtn{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.35);color:#fff;cursor:pointer}
+.tabBtn.active{border-color:rgba(0,234,255,.55);box-shadow:0 0 18px rgba(0,234,255,.20)}
+.panel{display:none}
+.panel.active{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px}
+.input{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.35);color:#fff}
+.mini{font-size:12px;opacity:.7}
+.bad{color:#ff7b7b}
 </style>
-</head><body>
-<div class="bg"></div><canvas id="stars"></canvas>
-<div class="admin">
-  <div class="side">
-    <div class="h">CozyHub Admin</div>
-    <div id="login">
-      <input id="pw" class="input" type="password" placeholder="Admin password">
-      <button class="btn" style="margin-top:10px" onclick="login()">Login</button>
-      <div id="loginMsg" class="msg"></div>
-    </div>
-    <div id="menu" style="display:none">
-      <button class="tab active" data-tab="dash">Dashboard</button>
-      <button class="tab" data-tab="keys">Keys</button>
-      <button class="tab" data-tab="web">Web Control</button>
-      <button class="tab" data-tab="rotation">Rotation</button>
-      <button class="btn" style="margin-top:10px;background:#ff4b4b;color:#fff" onclick="logout()">Logout</button>
-    </div>
-  </div>
-  <div class="main">
-    <div id="dash" class="pane show">
-      <div class="h">Dashboard</div>
-      <div class="row">
-        <div class="badge ok">Keys: <span id="k">-</span></div>
-        <div class="badge ok">Tasks: <span id="t">-</span></div>
+</head>
+<body>
+<div class="bgGlow"></div>
+<canvas id="cozyStars"></canvas>
+
+<div class="langBox">
+  <button id="langEN" onclick="setLang('en')">EN</button>
+  <button id="langVI" onclick="setLang('vi')">VI</button>
+</div>
+
+<div class="adminWrap">
+  <div class="card" style="width:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <div>
+        <h1 data-i18n="cozyhub">CozyHub</h1>
+        <div class="sub mini">Admin Panel</div>
+      </div>
+      <div>
+        <button class="btn" style="width:auto;padding:10px 14px" id="logoutBtn">Logout</button>
       </div>
     </div>
-    <div id="keys" class="pane">
-      <div class="h">Keys</div>
+
+    <div id="loginBox" class="box" style="margin-top:12px;">
+      <div class="sub" style="margin-bottom:8px;">Admin Password</div>
+      <input id="pw" class="input" type="password" placeholder="Enter password">
       <div class="row">
-        <input id="ip" class="input" placeholder="IP" style="flex:1">
-        <input id="hours" class="input" placeholder="Ban hours" style="width:140px" value="24">
+        <button class="btn" style="width:100%" id="loginBtn">Login</button>
       </div>
-      <div class="row">
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="ban()">Ban</button>
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="unban()">Unban</button>
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="resetKey()">Reset Key</button>
-      </div>
-      <div id="keysMsg" class="msg"></div>
+      <div class="mini bad" id="loginMsg"></div>
     </div>
-    <div id="web" class="pane">
-      <div class="h">Web Control</div>
-      <div class="row">
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="maint(true)">ON</button>
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="maint(false)">OFF</button>
-        <span id="m" class="badge ok">-</span>
+
+    <div id="app" style="display:none;margin-top:12px;">
+      <div class="tabs">
+        <button class="tabBtn active" data-tab="missions">Missions</button>
+        <button class="tabBtn" data-tab="stats">Stats</button>
+        <button class="tabBtn" data-tab="maintenance">Maintenance</button>
+        <button class="tabBtn" data-tab="security">Security</button>
+        <button class="tabBtn" data-tab="snapshot">Snapshot</button>
+        <button class="tabBtn" data-tab="health">Health</button>
+        <button class="tabBtn" data-tab="logs">Admin Logs</button>
+        <button class="tabBtn" data-tab="features">Features</button>
       </div>
-    </div>
-    <div id="rotation" class="pane">
-      <div class="h">Rotation</div>
-      <div class="row">
-        <span id="rb" class="badge ok">Loading...</span>
-        <span id="rl" style="opacity:.7;font-size:12px"></span>
+
+      <div id="missions" class="panel active">
+        <div class="grid">
+          <div class="box">
+            <div><b>Mission 1</b></div>
+            <label class="mini"><input type="checkbox" id="m1en"> Enable</label>
+            <div class="mini" style="margin-top:6px;">Link</div>
+            <input class="input" id="m1link" placeholder="https://...">
+            <div class="mini" style="margin-top:6px;">Return URL (Task1)</div>
+            <input class="input" id="m1ret" placeholder="https://YOUR_GH/task1/index.html">
+          </div>
+
+          <div class="box">
+            <div><b>Mission 2</b></div>
+            <label class="mini"><input type="checkbox" id="m2en"> Enable</label>
+            <div class="mini" style="margin-top:6px;">Link</div>
+            <input class="input" id="m2link" placeholder="https://...">
+            <div class="mini" style="margin-top:6px;">Return URL (Task2)</div>
+            <input class="input" id="m2ret" placeholder="https://YOUR_GH/task2/index.html">
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="saveMissions" style="width:100%">Save</button>
+        </div>
       </div>
-      <button class="btn" style="width:auto;padding:10px 14px" onclick="rotDone()">Rotate Done</button>
-      <div style="margin-top:10px">
-        <button class="btn" style="width:auto;padding:10px 14px" onclick="gen()">Generate Secret</button>
-        <div id="wrap" style="display:none;margin-top:10px">
-          <pre id="box"></pre>
-          <div class="row">
-            <span id="str" class="badge ok">Strong</span>
-            <button class="btn" style="width:auto;padding:10px 14px" onclick="copy()">Copy</button>
-            <span id="timer" style="opacity:.65;font-size:12px"></span>
+
+      <div id="stats" class="panel">
+        <div class="grid">
+          <div class="box">
+            <div><b>Mission Stats</b></div>
+            <div class="mini">NV1 Visit: <span id="s1v">0</span></div>
+            <div class="mini">NV1 Done: <span id="s1d">0</span></div>
+            <div class="mini">NV2 Visit: <span id="s2v">0</span></div>
+            <div class="mini">NV2 Done: <span id="s2d">0</span></div>
+            <div class="row"><button class="btn" style="width:100%" id="refreshStats">Refresh</button></div>
+          </div>
+          <div class="box">
+            <div><b>Key Stats</b></div>
+            <div class="mini">Keys issued (today): <span id="kToday">0</span></div>
+            <div class="mini">Keys active: <span id="kActive">0</span></div>
+            <div class="row"><button class="btn" style="width:100%" id="refreshKeyStats">Refresh</button></div>
           </div>
         </div>
       </div>
-      <div style="margin-top:12px">
-        <b>History</b>
-        <div id="hist" style="margin-top:8px;font-size:13px;opacity:.9"></div>
+
+      <div id="maintenance" class="panel">
+        <div class="box">
+          <div><b>Maintenance</b></div>
+          <label class="mini"><input type="checkbox" id="maintAll"> Maintenance (All)</label>
+          <div class="mini">When ON, user pages show a maintenance message.</div>
+          <div class="row"><button class="btn" style="width:100%" id="saveMaint">Save</button></div>
+        </div>
       </div>
+
+      <div id="security" class="panel">
+        <div class="grid">
+          <div class="box">
+            <div><b>Ban IP</b></div>
+            <input class="input" id="banIp" placeholder="1.2.3.4">
+            <div class="mini">Hours</div>
+            <input class="input" id="banHours" type="number" value="24">
+            <div class="row"><button class="btn" style="width:100%" id="banBtn">Ban</button></div>
+          </div>
+          <div class="box">
+            <div><b>Unban IP</b></div>
+            <input class="input" id="unbanIp" placeholder="1.2.3.4">
+            <div class="row"><button class="btn" style="width:100%" id="unbanBtn">Unban</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="snapshot" class="panel">
+        <div class="grid">
+          <div class="box">
+            <div><b>Create Snapshot</b></div>
+            <input class="input" id="snapName" placeholder="name (optional)">
+            <div class="row"><button class="btn" style="width:100%" id="snapCreate">Create</button></div>
+            <div class="mini" id="snapMsg"></div>
+          </div>
+          <div class="box">
+            <div><b>Restore Snapshot</b></div>
+            <input class="input" id="snapId" placeholder="snapshot id">
+            <div class="row"><button class="btn" style="width:100%" id="snapRestore">Restore</button></div>
+            <div class="mini">Tip: copy snapshot id from Logs tab.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="health" class="panel">
+        <div class="box">
+          <div><b>System Health</b></div>
+          <pre class="mini" id="healthBox">Click check</pre>
+          <div class="row"><button class="btn" style="width:100%" id="healthBtn">Check</button></div>
+        </div>
+      </div>
+
+      <div id="logs" class="panel">
+        <div class="box">
+          <div><b>Admin Logs</b></div>
+          <pre class="mini" id="logBox">Click refresh</pre>
+          <div class="row"><button class="btn" style="width:100%" id="logBtn">Refresh</button></div>
+        </div>
+      </div>
+
+      <div id="features" class="panel">
+        <div class="box">
+          <div><b>Feature Toggles</b></div>
+          <label class="mini"><input type="checkbox" id="fProgress"> Progress UI</label><br>
+          <label class="mini"><input type="checkbox" id="fStats"> Stats UI</label><br>
+          <label class="mini"><input type="checkbox" id="fGetKey"> GetKey</label><br>
+          <div class="row"><button class="btn" style="width:100%" id="saveFeatures">Save</button></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
-<script src="../assets/stars.js"></script>
+
+<script>/* CozyHub v2 - Star network background (connect only when near) */
+(function(){
+  const canvas = document.getElementById("cozyStars");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let W=0,H=0,stars=[];
+  const N = 85;
+  const MAX_LINK = 125;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function rand(min,max){ return min + Math.random()*(max-min); }
+  stars = Array.from({length:N}).map(()=>({
+    x: rand(0,W), y: rand(0,H),
+    vx: rand(-0.35,0.35), vy: rand(-0.35,0.35),
+    r: rand(1.2,2.0)
+  }));
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+
+    for(const s of stars){
+      s.x += s.vx; s.y += s.vy;
+      if(s.x<0||s.x>W) s.vx *= -1;
+      if(s.y<0||s.y>H) s.vy *= -1;
+    }
+
+    for(let i=0;i<stars.length;i++){
+      for(let j=i+1;j<stars.length;j++){
+        const a=stars[i], b=stars[j];
+        const dx=a.x-b.x, dy=a.y-b.y;
+        const d=Math.hypot(dx,dy);
+        if(d<MAX_LINK){
+          const alpha = (1 - d/MAX_LINK) * 0.18;
+          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    for(const s of stars){
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();</script>
 <script>
-applyLang("en");
-const API=COZY.api.admin;
-const tok=()=>localStorage.getItem("admTok")||"";
-const setAuthed=(v)=>{document.getElementById("login").style.display=v?"none":"block";document.getElementById("menu").style.display=v?"block":"none";};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
-document.querySelectorAll(".pane").forEach(p=>p.classList.remove("show"));document.getElementById(b.dataset.tab).classList.add("show");});
-async function api(path,body){
-  const r=await fetch(API+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","x-admin-token":tok()},body:body?JSON.stringify(body):undefined});
-  return await r.json();
+/* CozyHub v2 - i18n (default EN, switchable) */
+const TEXT = {
+  en: {
+    cozyhub: "CozyHub",
+    home_sub: "Click below to start missions and get your key.",
+    start: "Start Mission",
+    checking: "Checking...",
+    continue_m2: "Continue to Mission 2",
+    get_key: "Get Key",
+    m1_done: "Mission 1 completed",
+    m2_done: "Mission 2 completed",
+    m1_required: "Mission 1 required",
+    m2_required: "Mission 2 not completed",
+    invalid: "Invalid or expired. Redirecting...",
+    system_maint: "System is under maintenance.",
+    copy: "Copy",
+    copied: "Copied!",
+    key_title: "Your Key",
+    key_loading: "Loading key...",
+    key_error: "Unable to get key.",
+    back_home: "Back to Home"
+  },
+  vi: {
+    cozyhub: "CozyHub",
+    home_sub: "Bấm nút bên dưới để bắt đầu nhiệm vụ và nhận key.",
+    start: "Bắt đầu",
+    checking: "Đang kiểm tra...",
+    continue_m2: "Tiếp tục nhiệm vụ 2",
+    get_key: "Lấy Key",
+    m1_done: "Đã hoàn thành nhiệm vụ 1",
+    m2_done: "Đã hoàn thành nhiệm vụ 2",
+    m1_required: "Cần hoàn thành nhiệm vụ 1",
+    m2_required: "Chưa hoàn thành nhiệm vụ 2",
+    invalid: "Không hợp lệ hoặc hết hạn. Đang chuyển hướng...",
+    system_maint: "Hệ thống đang bảo trì.",
+    copy: "Sao chép",
+    copied: "Đã sao chép!",
+    key_title: "Key của bạn",
+    key_loading: "Đang lấy key...",
+    key_error: "Không thể lấy key.",
+    back_home: "Về trang chủ"
+  }
+};
+
+let LANG = localStorage.getItem("cozy_lang") || "en";
+function t(k){ return (TEXT[LANG] && TEXT[LANG][k]) ? TEXT[LANG][k] : (TEXT.en[k] || k); }
+function setLang(lang){ LANG = lang; localStorage.setItem("cozy_lang", lang); renderLang(); updateLangButtons(); }
+function renderLang(){
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+}
+function updateLangButtons(){
+  document.getElementById('langEN').classList.toggle('active', LANG==='en');
+  document.getElementById('langVI').classList.toggle('active', LANG==='vi');
+}
+renderLang(); updateLangButtons();
+
+const API = "https://cozyhub-adminapi.YOURSUBDOMAIN.workers.dev";
+let sessionToken = sessionStorage.getItem("admin_session") || "";
+
+function setAuthed(ok){
+  document.getElementById('loginBox').style.display = ok ? 'none' : 'block';
+  document.getElementById('app').style.display = ok ? 'block' : 'none';
+}
+async function api(path, opts={}){
+  const headers = opts.headers || {};
+  if(sessionToken) headers["Authorization"] = "Bearer " + sessionToken;
+  opts.headers = headers;
+  const r = await fetch(API + path, opts);
+  const j = await r.json().catch(()=>({ok:false}));
+  if(!r.ok) throw new Error(j.error || ("HTTP "+r.status));
+  return j;
 }
 async function login(){
+  const pw = document.getElementById('pw').value;
+  const msg = document.getElementById('loginMsg');
+  msg.textContent = "";
   try{
-    const pw=document.getElementById("pw").value.trim();
-    const d=await api("/admin/login",{password:pw});
-    if(!d.ok) throw 0;
-    localStorage.setItem("admTok",d.token);
-    setAuthed(true); await refresh();
-  }catch{document.getElementById("loginMsg").className="msg show error";document.getElementById("loginMsg").textContent="Login failed";}
+    const d = await fetch(API + "/login", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ password: pw })
+    }).then(r=>r.json());
+    if(!d.ok){ msg.textContent = d.error || "Login failed"; return; }
+    sessionToken = d.token;
+    sessionStorage.setItem("admin_session", sessionToken);
+    setAuthed(true);
+    await loadAll();
+  }catch(e){ msg.textContent = String(e.message||"Login failed"); }
 }
-async function logout(){localStorage.removeItem("admTok");setAuthed(false);try{await api("/admin/logout",{});}catch(e){}}
-async function refresh(){const d=await api("/admin/stats");document.getElementById("k").textContent=d.keys??"-";document.getElementById("t").textContent=d.tasks??"-";
-const m=await api("/admin/maint");document.getElementById("m").className="badge "+(m.on?"warn":"ok");document.getElementById("m").textContent=m.on?"ON":"OFF";
-await rotLoad();}
-async function ban(){const ip=document.getElementById("ip").value.trim();const hours=Number(document.getElementById("hours").value||24);
-const d=await api("/admin/ban",{ip,hours});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
-async function unban(){const ip=document.getElementById("ip").value.trim();const d=await api("/admin/unban",{ip});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
-async function resetKey(){const ip=document.getElementById("ip").value.trim();const d=await api("/admin/resetkey",{ip});document.getElementById("keysMsg").className="msg show "+(d.ok?"ok":"error");document.getElementById("keysMsg").textContent=d.ok?"OK":"Fail";}
-async function maint(on){await api("/admin/maint",{on});await refresh();}
-async function rotDone(){await api("/admin/rotation/mark",{type:"JWT+SYSTEM"});await rotLoad();}
-async function rotLoad(){
-  const d=await api("/admin/rotation/status");
-  const rb=document.getElementById("rb");
-  rb.className="badge "+(d.level==="danger"?"bad":(d.level==="warn"?"warn":"ok"));
-  rb.textContent=d.level==="ok"?("Next in "+d.leftDays+" days"):(d.level==="warn"?("Soon "+d.leftDays+" days"):"Overdue");
-  document.getElementById("rl").textContent=d.last?("Last: "+new Date(d.last).toLocaleString()):"Last: Never";
-  const h=await api("/admin/rotation/history");
-  document.getElementById("hist").innerHTML=(h.list||[]).slice(0,20).map(x=>`• ${new Date(x.time).toLocaleString()} — ${x.type} — ${x.ip||""}`).join("<br>")||"-";
+async function logout(){
+  sessionToken = "";
+  sessionStorage.removeItem("admin_session");
+  setAuthed(false);
 }
-let hideInt=null,left=30;
-function gen(){
-  const bytes=crypto.getRandomValues(new Uint8Array(48));
-  const s=Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
-  document.getElementById("wrap").style.display="block";
-  document.getElementById("box").textContent=s;
-  document.getElementById("str").className="badge ok";
-  clearInterval(hideInt); left=30;
-  document.getElementById("timer").textContent="Auto hide in 30s";
-  hideInt=setInterval(()=>{left--;document.getElementById("timer").textContent="Auto hide in "+left+"s";if(left<=0){clearInterval(hideInt);document.getElementById("wrap").style.display="none";}},1000);
+document.getElementById('loginBtn').onclick = login;
+document.getElementById('logoutBtn').onclick = logout;
+
+document.querySelectorAll('.tabBtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+async function loadAll(){
+  const cfg = await api("/config");
+  document.getElementById('m1en').checked = cfg.m1en === "true";
+  document.getElementById('m2en').checked = cfg.m2en === "true";
+  document.getElementById('m1link').value = cfg.m1link || "";
+  document.getElementById('m2link').value = cfg.m2link || "";
+  document.getElementById('m1ret').value = cfg.m1ret || "";
+  document.getElementById('m2ret').value = cfg.m2ret || "";
+  document.getElementById('maintAll').checked = cfg.maintAll === "true";
+
+  const ft = await api("/features");
+  document.getElementById('fProgress').checked = ft.progress === "true";
+  document.getElementById('fStats').checked = ft.stats === "true";
+  document.getElementById('fGetKey').checked = ft.getkey === "true";
+
+  await refreshStats();
 }
-function copy(){navigator.clipboard.writeText(document.getElementById("box").textContent.trim());}
-(function(){ if(tok()){ setAuthed(true); refresh().catch(()=>{});} })();
+async function refreshStats(){
+  const st = await api("/stats");
+  s1v.textContent = st.nv1_visit || "0";
+  s1d.textContent = st.nv1_done || "0";
+  s2v.textContent = st.nv2_visit || "0";
+  s2d.textContent = st.nv2_done || "0";
+  kToday.textContent = st.key_today || "0";
+  kActive.textContent = st.key_active || "0";
+}
+document.getElementById('refreshStats').onclick = refreshStats;
+document.getElementById('refreshKeyStats').onclick = refreshStats;
+
+document.getElementById('saveMissions').onclick = async ()=>{
+  await api("/config", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      m1en: m1en.checked, m2en: m2en.checked,
+      m1link: m1link.value, m2link: m2link.value,
+      m1ret: m1ret.value, m2ret: m2ret.value
+    })
+  });
+  alert("Saved");
+};
+document.getElementById('saveMaint').onclick = async ()=>{
+  await api("/config", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ maintAll: maintAll.checked })
+  });
+  alert("Saved");
+};
+document.getElementById('saveFeatures').onclick = async ()=>{
+  await api("/features", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      progress: fProgress.checked,
+      stats: fStats.checked,
+      getkey: fGetKey.checked
+    })
+  });
+  alert("Saved");
+};
+document.getElementById('banBtn').onclick = async ()=>{
+  await api("/ban", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ ip: banIp.value, hours: Number(banHours.value||24) })
+  });
+  alert("Banned");
+};
+document.getElementById('unbanBtn').onclick = async ()=>{
+  await api("/unban", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ ip: unbanIp.value })
+  });
+  alert("Unbanned");
+};
+document.getElementById('snapCreate').onclick = async ()=>{
+  const d = await api("/snapshot/create", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name: snapName.value })
+  });
+  snapMsg.textContent = "Snapshot: " + d.id;
+};
+document.getElementById('snapRestore').onclick = async ()=>{
+  await api("/snapshot/restore", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ id: snapId.value })
+  });
+  alert("Restored");
+  await loadAll();
+};
+document.getElementById('healthBtn').onclick = async ()=>{
+  const d = await api("/health");
+  healthBox.textContent = JSON.stringify(d, null, 2);
+};
+document.getElementById('logBtn').onclick = async ()=>{
+  const d = await api("/logs");
+  logBox.textContent = d.lines.join("\n");
+};
+if(sessionToken){ setAuthed(true); loadAll().catch(()=>logout()); } else { setAuthed(false); }
 </script>
-</body></html>
+</body>
+</html>
